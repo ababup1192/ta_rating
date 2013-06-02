@@ -41,5 +41,3 @@ class FileManagement
   end
   attr_accessor :rating_dir,:file_extension,:delimiter,:output_file
 end
-
-
