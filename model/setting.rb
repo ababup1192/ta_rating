@@ -10,6 +10,7 @@ class Setting
     @delimiter = ","
     @compile_command = "gcc $file"
     @exec_command = "./a.out"
+    @test_data = ""
     @result = "result"
   end
   def getparameter(context)
@@ -34,5 +35,5 @@ class Setting
     @exec_command = context.e_text
     @result = context.r2_text
   end
-  attr_accessor :mailing_list,:mailing_list_path,:mailing_path,:rating_directory,:file_extension,:delimiter,:compile_command,:exec_command,:result
+  attr_accessor :mailing_list,:mailing_list_path,:mailing_path,:rating_directory,:file_extension,:delimiter,:compile_command,:exec_command,:result,:test_data
 end

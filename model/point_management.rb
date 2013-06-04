@@ -10,7 +10,10 @@ class PointManagement
     @point_hash = Hash[*arr.flatten]
   end
   def set_point(key,point)
-    @point_hash[key] = point
+    if @point_hash.key?(key)
+      @point_hash[key] = point
+    end
+     @point_hash
   end
   attr_accessor :mailing_list,:point_hash
 end

@@ -11,13 +11,17 @@ class ExecuteManagement
     @compile_result = ""
     @exec_result = ""
   end
-  def generate_thread(command,c_flag)
+  def generate_thread(command,c_flag,input)
     err_flag = false
 
     command = command.gsub(/\$file/,@file_path)
     command = command.gsub(/\$dir/,@directory_path)
     Thread.new{
       Open3.popen3(command) do |stdin, stdout, stderr|
+        if !c_flag
+          stdin.write(input)
+          stdin.close_write
+        end
         stdout.each do |line|
           if c_flag
             @compile_result += line
@@ -37,8 +41,8 @@ class ExecuteManagement
       raise "Error" if err_flag
     }
   end
-  def exec_thread(command,c_flag)
-    thread = generate_thread(command,c_flag)
+  def exec_thread(command,c_flag,input)
+    thread = generate_thread(command,c_flag,input)
     timeout(0.5){
       loop do
         Thread.pass
@@ -49,10 +53,10 @@ class ExecuteManagement
       end
     }
   end
-  def exec(context,compile_command,exec_command)
+  def exec(context,compile_command,exec_command,input)
     begin
       context.exec_text.clear
-      exec_thread(compile_command,true)
+      exec_thread(compile_command,true,input)
     rescue Timeout::Error
       context.exec_text.insert('end',"[コンパイル:タイムアウト]\n#{@compile_result}")
     rescue RuntimeError
@@ -61,12 +65,12 @@ class ExecuteManagement
       context.exec_text.insert('end',"[コンパイル:実行不可能]\n#{@compile_result}")
     else
       context.exec_text.insert('end',"[コンパイル:成功]\n#{@compile_result}")
-      exec_next(context,exec_command)
+      exec_next(context,exec_command,input)
     end
   end
-  def exec_next(context,exec_command)
+  def exec_next(context,exec_command,input)
     begin
-      exec_thread(exec_command,false)
+      exec_thread(exec_command,false,input)
     rescue Timeout::Error
       context.exec_text.insert('end',"[実行:タイムアウト]\n#{@exec_result}")
     rescue RuntimeError

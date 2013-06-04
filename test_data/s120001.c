@@ -1,5 +1,7 @@
 #include <stdio.h>
 
 int main(){
-    printf("hello world\n");
+    char in[20];
+    scanf("%s",in);
+    printf("hello world\n%s\n",in);
 }
